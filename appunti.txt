@@ -1,0 +1,93 @@
+https://www.youtube.com/watch?v=SVkpQKiaWXU
+
+5 vite di partenza + fino a 3? di bonus
+il tempo parte da 9999, si perdono 200? punti al secondo
+Le nuvole in alto sono animate
+
+Velocità torta:
+- compare a sx quando Time == 9400
+- scompare a dx quando Time == 5500
+
+Velocità salsiccia:
+- compare a dx quando Time == 9850?
+- arriva a sx quando Time == 8000
+
+
+## Livelli
+1. 
+	- plain (arancione)
+	- torta alta da sx a dx
+	- salsiccia bassa da dx a sx
+
+2. 
+	- buche (verde)
+	- <vuoto>
+
+3.
+	- ascensore (rosa)
+	- <vuoto>
+	L'ascensore parte da sx; ci mette circa 10 sec per arrivare a dx
+	L'animazione di corsa è attiva quando bobby è fermo sull'ascensore
+
+4. 
+	- buche (verde)
+	- spadaccino
+	Lo spadaccino si alza e si abbassa a intervalli di 2 secondi circa; si sposta alla buca successiva quando bobby atterra al di là della buca
+
+5.
+	- buche (blu)
+	- salsiccia bassa da dx a sx
+	- torta alta da sx a dx
+
+6.
+	- ascensore (verde oliva)
+	- salsiccia alta da dx a sx
+	- torta alta da sx a dx
+
+7.
+	- buche (arancione)
+	- spadaccino
+	- salsiccia alta da dx a sx
+
+8.
+	- buche (senape)
+	- spadaccino
+	- salsiccia bassa da dx a sx
+
+9.
+	- buche (verde)
+	- spadaccino
+	- torta alta da sx a dx
+
+10.
+	- ascensore (arancione)
+	- salsiccia alta da dx a sx
+	- torta bassa da sx a dx
+
+11.
+	- buche (verde)
+	- salsiccia bassa da dx a sx
+	- torta bassa da sx a dx
+
+12.
+	- buche (blu/verde)
+ 	- spadaccino
+	- salsiccia alta da dx a sx
+	- torta alta da sx a dx
+
+13.
+	- buche (viola/senape)
+ 	- spadaccino
+	- salsiccia bassa da dx a sx
+	- torta bassa da sx a dx
+
+14.
+	- ascensore (verde/senape)
+	- salsiccia bassa da dx a sx
+	- torta bassa da sx a dx
+	+ baracchino a dx; all'arrivo compare lo spadaccino
+	Il cursore in alto del progresso nei livelli arriva a sx del rettangolo. Alla conclusione del livello si riparte dal livello 1.
+	
+
+
+
