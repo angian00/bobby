@@ -12,6 +12,28 @@ Velocità salsiccia:
 - compare a dx quando Time == 9850?
 - arriva a sx quando Time == 8000
 
+Velocità bobby:
+...
+
+## bitmap font format:
+http://www.angelcode.com/products/bmfont/doc/file_format.html
+
+## Assets
+- bitmap font
+- level templates
+- animated sprites:
+    - bobby
+    - cake
+    - sausage
+    - magic carpet
+    + clouds
+- layout measures
+- sound effects:
+    - run
+    - jump
+    - win level
+    - death
+    ?
 
 ## Livelli
 1. 
@@ -87,7 +109,7 @@ Velocità salsiccia:
 	- torta bassa da sx a dx
 	+ baracchino a dx; all'arrivo compare lo spadaccino
 	Il cursore in alto del progresso nei livelli arriva a sx del rettangolo. Alla conclusione del livello si riparte dal livello 1.
-	
+
 
 
 

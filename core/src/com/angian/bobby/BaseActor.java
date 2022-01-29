@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -22,6 +23,8 @@ public class BaseActor extends Group {
     private boolean animationPaused;
     private Rectangle boundaryRectangle;
     private static Rectangle worldBounds;
+    private Vector2 velocityVec;
+
 
 
     public BaseActor(Stage s) {
@@ -36,6 +39,7 @@ public class BaseActor extends Group {
         animation = null;
         elapsedTime = 0;
         animationPaused = false;
+        velocityVec = new Vector2(0, 0);
     }
 
     public void setAnimation(Animation<TextureRegion> anim) {
@@ -53,6 +57,37 @@ public class BaseActor extends Group {
 
     public void setAnimationPaused(boolean pause) {
         animationPaused = pause;
+    }
+
+    public void setSpeed(float speed) {
+        if (velocityVec.len() == 0)
+            velocityVec.set(speed, 0);
+        else
+            velocityVec.setLength(speed);
+    }
+
+    public float getSpeed() {
+        return velocityVec.len();
+    }
+
+    public boolean isMoving() {
+        return getSpeed() > 0;
+    }
+
+    public void setVelocity(float vx, float vy) {
+        velocityVec = new Vector2(vx, vy);
+    }
+
+    public void setVelocityX(float vx) {
+        velocityVec = new Vector2(vx, velocityVec.y);
+    }
+
+    public void setVelocityY(float vy) {
+        velocityVec = new Vector2(velocityVec.x, vy);
+    }
+
+    public void applyPhysics(float dt) {
+        moveBy(velocityVec.x * dt, velocityVec.y * dt);
     }
 
     public void act(float dt) {
@@ -140,7 +175,8 @@ public class BaseActor extends Group {
         for (int n=0; n < fileCount; n++) {
             String fileName = fileNames[n];
             Texture texture = new Texture(fileName);
-            texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+            //texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+            texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
             textureArray.add(new TextureRegion(texture));
         }
 
@@ -160,7 +196,8 @@ public class BaseActor extends Group {
 
     public Animation<TextureRegion> loadAnimationFromSheet(String fileName, int rows, int cols, float frameDuration, boolean loop) {
         Texture texture = new Texture(Gdx.files.internal(fileName), true);
-        texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        //texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         int frameWidth = texture.getWidth() / cols;
         int frameHeight = texture.getHeight() / rows;
 

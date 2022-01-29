@@ -1,14 +1,7 @@
 ## Milestones
-### v0.1
-- project skeleton
-- git project
-- mock screens
-- research about the game
-
 
 ### v0.2
-- moving character with sprites
-- moving enemies (cake and sausage) with sprites
+- animated sprites for bobby, cake, sausage
 
 
 ### v0.3
@@ -18,11 +11,18 @@
 
 ### v0.4
 - level templates
-
+- score
 
 ### v0.5
 - sounds
-- bell & whistles (level cursor, cloud animation)
+- bell & whistles 
+  - level cursor
+  - cloud animation
+  - lives icons
 
 ### v0.6
 - fine tuning timings and pixel art
+  - check y velocity di bobby orig
+
+## Bugfixing
+- flipped textures for backwards movement
