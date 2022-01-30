@@ -12,9 +12,9 @@
 
 
 
-i=20
-for srcImage in frames/frame_06*.bmp
+i=10
+for srcImage in frames/frame_0[56]*.bmp
 do
-	convert -extract 50x20+70+100 $srcImage subimage_$i.png
+	convert -extract 40x15+160+125 $srcImage subimage_$i.png
 	let "i=i+1"
 done

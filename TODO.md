@@ -1,9 +1,5 @@
 ## Milestones
 
-### v0.2
-- animated sprites for bobby, cake, sausage
-
-
 ### v0.3
 - sword enemy
 - platform physics and enemy collision

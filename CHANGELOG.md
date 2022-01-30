@@ -2,12 +2,12 @@
 # Change Log
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [0.2] - 2022-
+## [0.2] - 2022-01-30
 
 ### Added
 - bitmap font for score and time
 - moving actors for bobby (keyboard-controlled), sausage, creampie
-- animated sprites for bobby, creampie
+- animated sprites for bobby, sausage, creampie
 
 ### Fixed
 - textures are now scaled using Nearest instead of Linear, 

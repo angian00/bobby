@@ -49,11 +49,13 @@ public class Bobby extends BaseActor {
     public void act(float dt) {
         super.act(dt);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT))
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             setVelocityX(-LevelLayout.BOBBY_RUN_SPEED);
-        else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+            setScaleX(-Math.abs(getScaleX())); //flips the sprite horizontally
+        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             setVelocityX(LevelLayout.BOBBY_RUN_SPEED);
-        else {
+            setScaleX(+Math.abs(getScaleX()));
+        } else {
             if (!isJumping())
                 setVelocityX(0);
         }
