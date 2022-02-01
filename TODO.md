@@ -1,24 +1,22 @@
 ## Milestones
 
-### v0.3
-- sword enemy
-- platform physics and enemy collision
-
-
 ### v0.4
-- level templates
-- score
+- sword enemy
+- carpet
 
 ### v0.5
 - sounds
 - bell & whistles 
   - level cursor
   - cloud animation
-  - lives icons
+  - lives icons; bonus lives
 
 ### v0.6
-- fine tuning timings and pixel art
+- fine tuning distances, speeds and pixel art
   - check y velocity di bobby orig
 
+### v0.7
+- porting to web
+
 ## Bugfixing
-- flipped textures for backwards movement
+- tune fall from ledge

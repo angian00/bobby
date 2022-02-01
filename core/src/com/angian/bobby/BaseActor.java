@@ -7,23 +7,19 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class BaseActor extends Group {
-    private Animation<TextureRegion> animation;
-    private float elapsedTime;
+    protected Animation<TextureRegion> animation;
+    protected float elapsedTime;
     private boolean animationPaused;
-    private Rectangle boundaryRectangle;
+    private Polygon boundaryPolygon;
     private static Rectangle worldBounds;
-    private Vector2 velocityVec;
+    protected Vector2 velocityVec;
+    protected Vector2 accelerationVec;
 
 
 
@@ -40,6 +36,7 @@ public class BaseActor extends Group {
         elapsedTime = 0;
         animationPaused = false;
         velocityVec = new Vector2(0, 0);
+        accelerationVec = new Vector2(0, 0);
     }
 
     public void setAnimation(Animation<TextureRegion> anim) {
@@ -51,7 +48,7 @@ public class BaseActor extends Group {
         setSize(w, h);
         setOrigin(w/2, h/2);
 
-        if (boundaryRectangle == null)
+        if (boundaryPolygon == null)
             setBoundaryRectangle();
     }
 
@@ -72,18 +69,6 @@ public class BaseActor extends Group {
 
     public boolean isMoving() {
         return getSpeed() > 0;
-    }
-
-    public void setVelocity(float vx, float vy) {
-        velocityVec = new Vector2(vx, vy);
-    }
-
-    public void setVelocityX(float vx) {
-        velocityVec = new Vector2(vx, velocityVec.y);
-    }
-
-    public void setVelocityY(float vy) {
-        velocityVec = new Vector2(velocityVec.x, vy);
     }
 
     public void applyPhysics(float dt) {
@@ -129,10 +114,67 @@ public class BaseActor extends Group {
     public void setBoundaryRectangle() {
         float w = getWidth();
         float h = getHeight();
-        boundaryRectangle = new Rectangle(0, 0, w, h);
+        float[] vertices = {0,0, w,0, w,h, 0,h};
+        boundaryPolygon = new Polygon(vertices);
     }
-    public Rectangle getBoundaryRectangle() {
-        return boundaryRectangle;
+    public Polygon getBoundaryRectangle() {
+        return boundaryPolygon;
+    }
+
+    public void setBoundaryPolygon(int numSides)
+    {
+        float w = getWidth();
+        float h = getHeight();
+
+        float[] vertices = new float[2*numSides];
+        for (int i = 0; i < numSides; i++) {
+            float angle = i * 6.28f / numSides;
+            // x-coordinate
+            vertices[2*i] = w/2 * MathUtils.cos(angle) + w/2;
+            // y-coordinate
+            vertices[2*i+1] = h/2 * MathUtils.sin(angle) + h/2;
+        }
+
+        boundaryPolygon = new Polygon(vertices);
+    }
+
+    public Polygon getBoundaryPolygon()
+    {
+        boundaryPolygon.setPosition(getX(), getY());
+        boundaryPolygon.setOrigin(getOriginX(), getOriginY());
+        boundaryPolygon.setRotation(getRotation());
+        boundaryPolygon.setScale(getScaleX(), getScaleY());
+
+        return boundaryPolygon;
+    }
+
+    public boolean overlaps(BaseActor other) {
+        Polygon poly1 = this.getBoundaryPolygon();
+        Polygon poly2 = other.getBoundaryPolygon();
+
+        // initial simpler test to improve performance
+        if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle()))
+            return false;
+
+        return Intersector.overlapConvexPolygons(poly1, poly2);
+    }
+
+    public Vector2 preventOverlap(BaseActor other) {
+        Polygon poly1 = this.getBoundaryPolygon();
+        Polygon poly2 = other.getBoundaryPolygon();
+
+        // initial simpler test to improve performance
+        if (!poly1.getBoundingRectangle().overlaps(poly2.getBoundingRectangle()))
+            return null;
+
+        Intersector.MinimumTranslationVector mtv = new Intersector.MinimumTranslationVector();
+        boolean polygonsOverlap = Intersector.overlapConvexPolygons(poly1, poly2, mtv);
+        if (!polygonsOverlap)
+            return null;
+
+        this.moveBy(mtv.normal.x * mtv.depth, mtv.normal.y * mtv.depth);
+
+        return mtv.normal;
     }
 
     public static void setWorldBounds(float width, float height) {

@@ -2,79 +2,134 @@ package com.angian.bobby;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
-import static com.angian.bobby.LevelLayout.BOBBY_JUMP_DURATION;
-import static com.angian.bobby.LevelLayout.FRAME_DURATION;
+import static com.angian.bobby.LevelConstants.*;
 
 
 public class Bobby extends BaseActor {
-    private float jumpElapsedTime = -1;
-    private final float baseY;
+    public Rectangle startRect;
+    private float gravity;
+    private boolean isFallingToDeath = false;
 
-    public Bobby(Stage s) {
+    private final LevelScreen levelScreen;
+    private final BaseActor belowSensor;
+
+    public Bobby(LevelScreen levelScreen, Stage s) {
         super(s);
-        //loadTexture("bobby.png");
+        this.levelScreen = levelScreen;
+        this.gravity = GRAVITY;
+
         loadAnimationFromSheet("bobby_spritesheet.png", 1, 4, FRAME_DURATION, true);
 
-        Rectangle startRect = LevelLayout.standard2gdxCoords(LevelLayout.BOBBY_START);
-        setPosition(startRect.x, startRect.y);
-        baseY = startRect.y;
+        startRect = LevelConstants.standard2gdxCoords(LevelConstants.BOBBY_START);
 
-        setScale(getScaleX() * LevelLayout.SCALE_FACTOR, getScaleY() * LevelLayout.SCALE_FACTOR);
-        setOrigin(0, 0);
+        setScale(getScaleX() * LevelConstants.SCALE_FACTOR, getScaleY() * LevelConstants.SCALE_FACTOR);
+        setOriginY(0);
+        setPosition(startRect.x + getWidth()/2, startRect.y);
+
+        belowSensor = new BaseActor(0, 0, s);
+        belowSensor.loadTexture("white.png");
+        belowSensor.setSize(getWidth() - 8, 8);
+        belowSensor.setBoundaryRectangle();
+        //belowSensor.setVisible(true); //DEBUG
+        belowSensor.setVisible(false);
     }
 
     @Override
     public void applyPhysics(float dt) {
-        if (isJumping()) {
-            jumpElapsedTime += dt;
-            if (jumpElapsedTime >= BOBBY_JUMP_DURATION) {
-                //fall down
-                setVelocityY(-LevelLayout.BOBBY_RUN_SPEED);
-            }
-        }
+        velocityVec.y -= gravity * dt;
 
-        super.applyPhysics(dt);
-
-        if (getY() < baseY) {
-            setVelocityY(0);
-            setY(baseY);
-            jumpElapsedTime = -1;
-            //TODO: check for death or collision with platform
-        }
+        moveBy(velocityVec.x * dt, velocityVec.y * dt);
+        belowSensor.setPosition(getX() + 4, getY() - 8);
     }
 
     public void act(float dt) {
         super.act(dt);
 
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            setVelocityX(-LevelLayout.BOBBY_RUN_SPEED);
-            setScaleX(-Math.abs(getScaleX())); //flips the sprite horizontally
-        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            setVelocityX(LevelLayout.BOBBY_RUN_SPEED);
-            setScaleX(+Math.abs(getScaleX()));
-        } else {
-            if (!isJumping())
-                setVelocityX(0);
+        if (!isFallingToDeath) {
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                velocityVec.x = -LevelConstants.BOBBY_RUN_SPEED;
+                setScaleX(-Math.abs(getScaleX())); //flips the sprite horizontally
+            } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                velocityVec.x = LevelConstants.BOBBY_RUN_SPEED;
+                setScaleX(+Math.abs(getScaleX()));
+            } else {
+                if (!isJumping())
+                    velocityVec.x = 0;
+            }
         }
 
         applyPhysics(dt);
 
-        setAnimationPaused(!isMoving());
+        if (this.isOnSolid()) {
+            belowSensor.setColor(Color.GREEN);
+        } else {
+            belowSensor.setColor(Color.RED);
+        }
+
+        setAnimationPaused(!isRunning());
     }
 
 
     public void jump() {
-        if (isJumping())
+        if (isJumping() || isFalling())
             return;
 
-        jumpElapsedTime = 0.0f;
-        setVelocityY(LevelLayout.BOBBY_RUN_SPEED);
+        velocityVec.y = LevelConstants.BOBBY_JUMP_SPEED;
     }
 
+    public void fallToDeath() {
+        velocityVec.x = 0;
+        velocityVec.y = -BOBBY_DEATH_FALL_SPEED;
+        gravity = 0;
+        isFallingToDeath = true;
+    }
+
+    final static float EPSILON = 0.001f;
+
     public boolean isJumping() {
-        return (jumpElapsedTime >= 0);
+        return (velocityVec.y > EPSILON);
+    }
+
+    public boolean isFalling() {
+        return (velocityVec.y < -EPSILON);
+    }
+
+    public boolean isRunning() {
+        return (Math.abs(velocityVec.x) > EPSILON);
+    }
+
+    public boolean isOnSolid() {
+        for (Solid platform: levelScreen.getPlatforms()) {
+            if (belowOverlaps(platform))
+                return true;
+        }
+
+        return false;
+    }
+
+    public boolean belowOverlaps(BaseActor actor) {
+        return belowSensor.overlaps(actor);
+    }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        if (isFallingToDeath) {
+            // "drowning" animation, i.e. bobby feet disappear in the hole
+            int croppedHeight = (int)(getHeight() - (startRect.y - getY()) / getScaleY());
+            TextureRegion tr = animation.getKeyFrame(elapsedTime);
+            tr.setRegion(tr.getRegionX(), tr.getRegionY(), tr.getRegionWidth(), croppedHeight);
+            batch.draw(tr,
+                    getX(), startRect.y, getOriginX(), getOriginY(),
+                    getWidth(), croppedHeight, getScaleX(), getScaleY(), getRotation());
+
+        } else {
+            super.draw(batch, parentAlpha);
+        }
     }
 }

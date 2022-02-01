@@ -2,6 +2,23 @@
 # Change Log
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+
+## [0.3] - 2022-02-01
+
+### Added
+- level template mechanism
+- score and time update
+- platform physics
+- death by
+    - fall
+    - enemy collision
+
+
+### Fixed
+- offset in texture flipping when bobby goes backwards
+
+
+
 ## [0.2] - 2022-01-30
 
 ### Added
