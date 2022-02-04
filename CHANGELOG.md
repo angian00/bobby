@@ -2,6 +2,13 @@
 # Change Log
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [0.4] - 2022-02-
+
+### Added
+- swordsman enemy
+- carpet
+- death by timeout
+
 
 ## [0.3] - 2022-02-01
 
@@ -13,10 +20,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/).
     - fall
     - enemy collision
 
-
 ### Fixed
 - offset in texture flipping when bobby goes backwards
-
 
 
 ## [0.2] - 2022-01-30

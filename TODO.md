@@ -1,9 +1,5 @@
 ## Milestones
 
-### v0.4
-- sword enemy
-- carpet
-
 ### v0.5
 - sounds
 - bell & whistles 
@@ -19,4 +15,6 @@
 - porting to web
 
 ## Bugfixing
-- tune fall from ledge
+- tune fall from ledge (rewrite preventOverlap())
+- fix sausage high position
+- ? bloccare velocità orizzontale durante salto? controllare su vice

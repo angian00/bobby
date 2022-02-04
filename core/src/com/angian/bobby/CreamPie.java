@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
-import static com.angian.bobby.LevelConstants.FRAME_DURATION;
+import static com.angian.bobby.LevelConstants.ANIM_FRAME_DURATION;
 
 
 public class CreamPie extends BaseActor {
@@ -12,7 +12,7 @@ public class CreamPie extends BaseActor {
 
     public CreamPie(LevelScreen.EnemyHeight height, Stage s) {
         super(s);
-        loadAnimationFromSheet("creampie_spritesheet.png", 4, 1, FRAME_DURATION, true);
+        loadAnimationFromSheet("creampie_spritesheet.png", 4, 1, ANIM_FRAME_DURATION, true);
 
         if (height == LevelScreen.EnemyHeight.HIGH)
             startRect = LevelConstants.CREAMPIE_START_HIGH;

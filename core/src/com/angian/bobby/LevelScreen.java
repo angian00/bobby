@@ -35,7 +35,7 @@ public class LevelScreen extends BaseScreen {
 
 	private final List<Solid> platforms;
 	private Bobby bobby;
-	private Carpet carpet;
+	public Carpet carpet;
 	private CreamPie creampie;
 	private Sausage sausage;
 	private Swordsman swordsman;
@@ -43,7 +43,7 @@ public class LevelScreen extends BaseScreen {
 
 	public LevelScreen() {
 		//this(1, 0);
-		this(2, 0);  //DEBUG
+		this(3, 0);  //DEBUG
 	}
 
 	public LevelScreen(int level, float startScore) {
@@ -119,7 +119,7 @@ public class LevelScreen extends BaseScreen {
 				sausageHeight = EnemyHeight.LOW;
 				break;
 			case 6:
-				levelType = LevelType.PLAIN;
+				levelType = LevelType.CARPET;
 				creampieHeight = EnemyHeight.HIGH;
 				sausageHeight = EnemyHeight.HIGH;
 				break;
@@ -205,9 +205,8 @@ public class LevelScreen extends BaseScreen {
 			sausage = new Sausage(sausageHeight, mainStage);
 
 		if (levelType == LevelType.CARPET) {
-			//Rectangle carpetDef =
-			//carpet = new Carpet(mainStage);
-			//platforms.add(carpet);  // carpet is a platform too!
+			carpet = new Carpet(mainStage);
+			platforms.add(carpet);  // carpet is a platform too!
 		}
 
 		if (hasSwordsman)
@@ -225,6 +224,12 @@ public class LevelScreen extends BaseScreen {
 		if (terminating)
 			return;
 
+		if (levelScore <= 0) {
+			levelScore = 0;
+			System.out.println("Bobby died by timeout");
+			BobbyGame.setActiveScreen(new LevelScreen(level, startScore));
+		}
+
 		levelScore -= (dt * TIME_FACTOR);
 		timeLabel.setText(String.format("%06d", (int)levelScore));
 
@@ -233,10 +238,11 @@ public class LevelScreen extends BaseScreen {
 			BobbyGame.setActiveScreen(new LevelScreen(level + 1, levelScore + startScore));
 		}
 
+
 		for (Solid platform: platforms) {
 			if (bobby.overlaps(platform)) {
 				Vector2 offset = bobby.preventOverlap(platform);
-				if (bobby != null) {
+				if (offset != null) {
 					if (Math.abs(offset.x) > Math.abs(offset.y))
 						bobby.velocityVec.x = 0;
 					else
@@ -247,13 +253,13 @@ public class LevelScreen extends BaseScreen {
 
 		if ( (sausage != null && bobby.overlaps(sausage))
 				|| (creampie != null && bobby.overlaps(creampie))
-				|| (swordsman != null && bobby.overlaps(swordsman)) ) {
+				|| (swordsman != null && bobby.overlapsSwordsman(swordsman)) ) {
 
 			System.out.println("Bobby died by collision");
 			BobbyGame.setActiveScreen(new LevelScreen(level, startScore));
 		}
 
-		if ( bobby.getY() < bobby.startRect.y ) {
+		if ( bobby.getY() < bobby.startRect.y && (carpet != null) && !bobby.belowOverlaps(carpet)) {
 			System.out.println("Bobby died by falling");
 			terminating = true;
 			bobby.fallToDeath();
@@ -264,6 +270,15 @@ public class LevelScreen extends BaseScreen {
 			bobby.addAction(deathSequence);
 		}
 
+
+		if (swordsman != null) {
+			//move swordsman from hole to hole
+			int nCrossedPlatforms = countCrossedPlatforms();
+			if (nCrossedPlatforms >= 3 && swordsman.getCurrHole() < 2)
+				swordsman.setCurrHole(2);
+			else if (nCrossedPlatforms == 2 && swordsman.getCurrHole() < 1)
+				swordsman.setCurrHole(1);
+		}
 	}
 
 
@@ -277,5 +292,16 @@ public class LevelScreen extends BaseScreen {
 		}
 
 		return false;
+	}
+
+
+	private int countCrossedPlatforms() {
+		int count = 0;
+		for (Solid platform: platforms) {
+			if (platform.getX() <= bobby.getX())
+				count ++;
+		}
+
+		return count;
 	}
 }

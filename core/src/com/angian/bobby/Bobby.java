@@ -24,7 +24,7 @@ public class Bobby extends BaseActor {
         this.levelScreen = levelScreen;
         this.gravity = GRAVITY;
 
-        loadAnimationFromSheet("bobby_spritesheet.png", 1, 4, FRAME_DURATION, true);
+        loadAnimationFromSheet("bobby_spritesheet.png", 1, 4, ANIM_FRAME_DURATION, true);
 
         startRect = LevelConstants.standard2gdxCoords(LevelConstants.BOBBY_START);
 
@@ -34,7 +34,7 @@ public class Bobby extends BaseActor {
 
         belowSensor = new BaseActor(0, 0, s);
         belowSensor.loadTexture("white.png");
-        belowSensor.setSize(getWidth() - 8, 8);
+        belowSensor.setSize(getWidth() - 8, 6);
         belowSensor.setBoundaryRectangle();
         //belowSensor.setVisible(true); //DEBUG
         belowSensor.setVisible(false);
@@ -45,7 +45,7 @@ public class Bobby extends BaseActor {
         velocityVec.y -= gravity * dt;
 
         moveBy(velocityVec.x * dt, velocityVec.y * dt);
-        belowSensor.setPosition(getX() + 4, getY() - 8);
+        belowSensor.setPosition(getX() + 4, getY() - 6);
     }
 
     public void act(float dt) {
@@ -62,6 +62,11 @@ public class Bobby extends BaseActor {
                 if (!isJumping())
                     velocityVec.x = 0;
             }
+
+            if (levelScreen.carpet != null && this.belowOverlaps(levelScreen.carpet)) {
+                //System.out.println("bobby is on carpet");
+                velocityVec.x += levelScreen.carpet.velocityVec.x;
+            }
         }
 
         applyPhysics(dt);
@@ -75,6 +80,23 @@ public class Bobby extends BaseActor {
         setAnimationPaused(!isRunning());
     }
 
+    public boolean overlapsSwordsman(Swordsman swordsman) {
+        if (!this.overlaps(swordsman))
+            return false;
+
+        if (swordsman.getCurrentPose() == Swordsman.Pose.CROUCHED) {
+            //inaccurate, but if Bobby collides with crouched swordsman
+            // he is already fallen into hole anyway
+            return false;
+        } else {
+            if (getY() + getOriginY() < swordsman.getY() + swordsman.getOriginY() + swordsman.getHeight() / 2)
+                return true;
+
+            return getX() + getOriginX() < swordsman.getX() + swordsman.getOriginX() + swordsman.getWidth() / 2;
+
+            //only top-right angle is safe
+        }
+    }
 
     public void jump() {
         if (isJumping() || isFalling())

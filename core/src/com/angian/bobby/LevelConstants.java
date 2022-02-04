@@ -10,8 +10,8 @@ public class LevelConstants {
     public static final int SCREEN_WIDTH = (int)(ORIG_SCREEN_WIDTH * SCALE_FACTOR);
     public static final int SCREEN_HEIGHT = (int)(ORIG_SCREEN_HEIGHT * SCALE_FACTOR);
 
-    public static final float FRAME_DURATION = 0.1f;
-    public static final float TIME_FACTOR = 200;
+    public static final float ANIM_FRAME_DURATION = 0.1f;
+    public static final float TIME_FACTOR = 408;
 
     public static final Rectangle TEXT_TIME  = new Rectangle(250,  10, 54, 7);
     public static final Rectangle TEXT_SCORE = new Rectangle(250, 178, 54, 7);
@@ -20,8 +20,12 @@ public class LevelConstants {
     public static final float BOBBY_RUN_SPEED = 20 * SCALE_FACTOR; //in px per sec
     public static final float BOBBY_JUMP_SPEED = 1.2f * BOBBY_RUN_SPEED; // in px per sec
     public static final float BOBBY_DEATH_FALL_SPEED = 5 * SCALE_FACTOR;
-    public static final float GRAVITY = 60.0f; //in px per sec2
+    public static final float GRAVITY = 20 * SCALE_FACTOR; //in px per sec2
     public static final float END_LEVEL_X = 292 * SCALE_FACTOR;
+
+    public static final Rectangle CARPET_START = new Rectangle(112, 96, 18, 9);
+    public static final int   CARPET_TO = 208; //right limit for carpet
+    public static final float CARPET_SPEED = BOBBY_RUN_SPEED;
 
     public static final Rectangle CREAMPIE_START_HIGH = new Rectangle(-40, 58, 28, 8);
     public static final Rectangle CREAMPIE_START_LOW = new Rectangle(-40, 64, 28, 8);
@@ -30,6 +34,19 @@ public class LevelConstants {
     public static final Rectangle SAUSAGE_START_HIGH = new Rectangle(320, 80, 18, 8);
     public static final Rectangle SAUSAGE_START_LOW = new Rectangle(320, 86, 18, 8);
     public static final float SAUSAGE_SPEED = 40 * SCALE_FACTOR; //in px per sec
+
+    public static final float SWORDSMAN_INTERVAL = 1; // in sec
+    public static final Rectangle[] SWORDSMAN_POSITIONS = {
+            new Rectangle(54,  81, 24, 35),
+            new Rectangle(150, 81, 24, 35),
+            new Rectangle(246, 81, 24, 35),
+    };
+
+    public static final Rectangle[] SWORDSMAN_BASE_POSITIONS = {
+            new Rectangle(60,  118, 20, 2),
+            new Rectangle(156, 118, 20, 2),
+            new Rectangle(252, 118, 20, 2),
+    };
 
 
     public static final Rectangle[] LEVEL_PLAIN_PLATFORMS = {

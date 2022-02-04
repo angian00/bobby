@@ -1,7 +1,7 @@
 https://www.youtube.com/watch?v=SVkpQKiaWXU
 
 5 vite di partenza + fino a 3? di bonus
-il tempo parte da 9999, si perdono 200? punti al secondo
+il tempo parte da 9999, si perdono circa 408 punti al secondo
 Le nuvole in alto sono animate
 
 Velocità torta:
@@ -14,6 +14,24 @@ Velocità salsiccia:
 
 Velocità bobby:
 ...
+
+base swordsman: 
+(60, 118) (80, 120)
+(156, 118) (176, 120)
+(252, 118) (272, 120)
+
+Intervallo switch swordsman: 1 sec
+(parte da posiz bassa)
+(54, 95) (78, 115)
+(150, 95) (174, 115)
+(246, 95) (270, 115)
+
+
+## recording video
+50 fps
+
+
+
 
 ## bitmap font format:
 http://www.angelcode.com/products/bmfont/doc/file_format.html
