@@ -4,6 +4,10 @@ https://www.youtube.com/watch?v=SVkpQKiaWXU
 il tempo parte da 9999, si perdono circa 408 punti al secondo
 Le nuvole in alto sono animate
 
+Cursore progress:
+livello 1: 128, 16
+livello 3: 136, 
+
 Velocità torta:
 - compare a sx quando Time == 9400
 - scompare a dx quando Time == 5500

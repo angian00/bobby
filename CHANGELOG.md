@@ -2,7 +2,22 @@
 # Change Log
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## [0.4] - 2022-02-
+## [0.5] - 2022-02-05
+ 
+### Added
+- life count and icons
+- level cursor
+- endgame booth
+- sounds
+
+### Changed
+- froze horizontal speed during jumps for consistency with original game 
+
+### Fixed
+- 1 pixel offset in level_carpet.png
+- regression where fallToDeath was not triggered anymore
+
+## [0.4] - 2022-02-04
 
 ### Added
 - swordsman enemy

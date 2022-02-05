@@ -16,10 +16,13 @@ public class Swordsman extends BaseActor {
         ERECT
     }
 
+    private LevelScreen levelScreen;
     int currHole;
 
-    public Swordsman(Stage s) {
+    public Swordsman(LevelScreen levelScreen, Stage s) {
         super(s);
+        this.levelScreen = levelScreen;
+
         loadAnimationFromSheet("swordsman_spritesheet.png", 1, 2, SWORDSMAN_INTERVAL, true);
 
         for (Rectangle rect: SWORDSMAN_POSITIONS) {

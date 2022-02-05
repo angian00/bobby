@@ -16,22 +16,40 @@ public class LevelConstants {
     public static final Rectangle TEXT_TIME  = new Rectangle(250,  10, 54, 7);
     public static final Rectangle TEXT_SCORE = new Rectangle(250, 178, 54, 7);
 
+    public static final Rectangle[] LIFE_POSITIONS = {
+            new Rectangle(120, 169, 6, 7),
+            new Rectangle(136, 169, 6, 7),
+            new Rectangle(152, 169, 6, 7),
+            new Rectangle(168, 169, 6, 7),
+            new Rectangle(184, 169, 6, 7),
+    };
+
+    public static final Rectangle[] LIFE_BONUS_POSITIONS = {
+            new Rectangle(72,  8, 6, 7),
+            new Rectangle(88,  8, 6, 7),
+            new Rectangle(104, 8, 6, 7),
+    };
+
+    public static final Rectangle PROGRESS_START = new Rectangle(128, 16, 2, 1);
+    public static final float PROGRESS_STEP = 4;
+
     public static final Rectangle BOBBY_START = new Rectangle(0, 74, 16, 22);
     public static final float BOBBY_RUN_SPEED = 20 * SCALE_FACTOR; //in px per sec
     public static final float BOBBY_JUMP_SPEED = 1.2f * BOBBY_RUN_SPEED; // in px per sec
-    public static final float BOBBY_DEATH_FALL_SPEED = 5 * SCALE_FACTOR;
+    public static final float BOBBY_DEATH_FALL_SPEED = 8 * SCALE_FACTOR;
     public static final float GRAVITY = 20 * SCALE_FACTOR; //in px per sec2
-    public static final float END_LEVEL_X = 292 * SCALE_FACTOR;
+    public static final float END_LEVEL_X = 292;
+    public static final float END_GAME_X = 264;
 
     public static final Rectangle CARPET_START = new Rectangle(112, 96, 18, 9);
     public static final int   CARPET_TO = 208; //right limit for carpet
     public static final float CARPET_SPEED = BOBBY_RUN_SPEED;
 
-    public static final Rectangle CREAMPIE_START_HIGH = new Rectangle(-40, 58, 28, 8);
-    public static final Rectangle CREAMPIE_START_LOW = new Rectangle(-40, 64, 28, 8);
+    public static final Rectangle CREAMPIE_START_HIGH = new Rectangle(-40, 63, 18, 8);
+    public static final Rectangle CREAMPIE_START_LOW = new Rectangle(-40, 86, 18, 8);
     public static final float CREAMPIE_SPEED = 20 * SCALE_FACTOR; //in px per sec
 
-    public static final Rectangle SAUSAGE_START_HIGH = new Rectangle(320, 80, 18, 8);
+    public static final Rectangle SAUSAGE_START_HIGH = new Rectangle(320, 63, 18, 8);
     public static final Rectangle SAUSAGE_START_LOW = new Rectangle(320, 86, 18, 8);
     public static final float SAUSAGE_SPEED = 40 * SCALE_FACTOR; //in px per sec
 
@@ -47,6 +65,9 @@ public class LevelConstants {
             new Rectangle(156, 118, 20, 2),
             new Rectangle(252, 118, 20, 2),
     };
+
+    public static final Rectangle FINAL_BOOTH_POSITION =  new Rectangle(304,  72, 16, 24);
+    public static final Rectangle FINAL_SWORDSMAN_POSITION =  new Rectangle(280,  60, 24, 35);
 
 
     public static final Rectangle[] LEVEL_PLAIN_PLATFORMS = {

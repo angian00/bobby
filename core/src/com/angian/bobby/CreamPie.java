@@ -8,10 +8,13 @@ import static com.angian.bobby.LevelConstants.ANIM_FRAME_DURATION;
 
 
 public class CreamPie extends BaseActor {
+    private LevelScreen levelScreen;
     public Rectangle startRect;
 
-    public CreamPie(LevelScreen.EnemyHeight height, Stage s) {
+    public CreamPie(LevelScreen levelScreen, LevelScreen.EnemyHeight height, Stage s) {
         super(s);
+        this.levelScreen = levelScreen;
+
         loadAnimationFromSheet("creampie_spritesheet.png", 4, 1, ANIM_FRAME_DURATION, true);
 
         if (height == LevelScreen.EnemyHeight.HIGH)
@@ -29,6 +32,9 @@ public class CreamPie extends BaseActor {
     }
 
     public void act(float dt) {
+        if (levelScreen.isWinning)
+            return;
+
         super.act(dt);
 
         applyPhysics(dt);

@@ -3,8 +3,6 @@ package com.angian.bobby;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Action;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 import java.util.ArrayList;
@@ -24,14 +22,16 @@ public class LevelScreen extends BaseScreen {
 		LOW
 	}
 
-	private final int level;
+	private int level;
 	private final float startScore;
+	private int nLives;
+	private int nBonusLives;
 	private float levelScore;
-	private boolean terminating;
+	private boolean isDying;
+	public boolean isWinning;
+	private boolean isFinal;
 
-	private BaseActor screenBackground;
 	private Label timeLabel;
-	private Label scoreLabel;
 
 	private final List<Solid> platforms;
 	private Bobby bobby;
@@ -39,17 +39,21 @@ public class LevelScreen extends BaseScreen {
 	private CreamPie creampie;
 	private Sausage sausage;
 	private Swordsman swordsman;
+	private FinalSwordsman finalSwordsman;
 
 
 	public LevelScreen() {
-		//this(1, 0);
-		this(3, 0);  //DEBUG
+		this(14, 0, 5, 0);
+		//this(6, 0, 5, 0);  //DEBUG
 	}
 
-	public LevelScreen(int level, float startScore) {
+	public LevelScreen(int level, float startScore, int nLives, int nBonusLives) {
 		this.level = level;
 		this.startScore = startScore;
-		this.terminating = false;
+		this.nLives = nLives;
+		this.nBonusLives = nBonusLives;
+		this.isDying = false;
+		this.isWinning = false;
 		this.platforms = new ArrayList<>();
 
 		initializeTemplate();
@@ -72,7 +76,7 @@ public class LevelScreen extends BaseScreen {
 		timeLabel.setHeight(labelRect.height);
 		mainStage.addActor(timeLabel);
 
-		scoreLabel = new Label(String.format("%06d", (int)startScore), Styles.labelStyle);
+		Label scoreLabel = new Label(String.format("%06d", (int)startScore), Styles.labelStyle);
 		labelRect = LevelConstants.standard2gdxCoords(LevelConstants.TEXT_SCORE);
 		scoreLabel.setPosition(labelRect.x, labelRect.y);
 		scoreLabel.setWidth(labelRect.width);
@@ -80,6 +84,19 @@ public class LevelScreen extends BaseScreen {
 		mainStage.addActor(scoreLabel);
 
 		levelScore = 9999f;
+
+
+		for (int iLife=0; iLife < nLives; iLife++) {
+			Rectangle rect = LevelConstants.standard2gdxCoords(LIFE_POSITIONS[iLife]);
+			new LifeIcon(rect.x, rect.y, mainStage);
+		}
+
+		for (int iLife=0; iLife < nBonusLives; iLife++) {
+			Rectangle rect = LevelConstants.standard2gdxCoords(LIFE_BONUS_POSITIONS[iLife]);
+			new LifeIcon(rect.x, rect.y, mainStage);
+		}
+
+		new ProgressCursor(level, mainStage);
 	}
 
 
@@ -165,15 +182,18 @@ public class LevelScreen extends BaseScreen {
 				break;
 			case 14:
 				levelType = LevelType.CARPET;
-				creampieHeight = EnemyHeight.LOW;
-				sausageHeight = EnemyHeight.LOW;
+				//DEBUG
+				creampieHeight = null;
+				sausageHeight = null;
+				//creampieHeight = EnemyHeight.LOW;
+				//sausageHeight = EnemyHeight.LOW;
 				isFinal = true;
 				break;
 			default:
 				throw new IllegalArgumentException("Invalid level: " + level);
 		}
 
-		screenBackground = new BaseActor(0, 0, mainStage);
+		BaseActor screenBackground = new BaseActor(0, 0, mainStage);
 		switch (levelType) {
 			case PLAIN:
 				screenBackground.loadTexture("level_plain.png");
@@ -200,42 +220,55 @@ public class LevelScreen extends BaseScreen {
 
 
 		if (creampieHeight != null)
-			creampie = new CreamPie(creampieHeight, mainStage);
+			creampie = new CreamPie(this, creampieHeight, mainStage);
 		if (sausageHeight != null)
-			sausage = new Sausage(sausageHeight, mainStage);
+			sausage = new Sausage(this, sausageHeight, mainStage);
 
 		if (levelType == LevelType.CARPET) {
-			carpet = new Carpet(mainStage);
+			carpet = new Carpet(this, mainStage);
 			platforms.add(carpet);  // carpet is a platform too!
 		}
 
 		if (hasSwordsman)
-			swordsman = new Swordsman(mainStage);
+			swordsman = new Swordsman(this, mainStage);
 
 		if (isFinal) {
-			//TODO: final booth
+			new FinalBooth(mainStage);
 		}
+		this.isFinal = isFinal;
 
 		bobby = new Bobby(this, mainStage);
 	}
 
 	@Override
 	protected void update(float dt) {
-		if (terminating)
+		if (isDying || isWinning)
 			return;
 
 		if (levelScore <= 0) {
 			levelScore = 0;
 			System.out.println("Bobby died by timeout");
-			BobbyGame.setActiveScreen(new LevelScreen(level, startScore));
+			die();
 		}
 
 		levelScore -= (dt * TIME_FACTOR);
 		timeLabel.setText(String.format("%06d", (int)levelScore));
 
-		if (bobby.getX() >= END_LEVEL_X + bobby.getWidth() / 2) {
+		float endX = isFinal ? END_GAME_X : END_LEVEL_X;
+		if (bobby.getX() >= endX  * SCALE_FACTOR + bobby.getWidth() / 2) {
 			System.out.println("Level " + level + " won");
-			BobbyGame.setActiveScreen(new LevelScreen(level + 1, levelScore + startScore));
+			if (nBonusLives < 3)
+				nBonusLives ++;
+
+			isWinning = true;
+			level = level + 1;
+			if (level > 14) {
+				// restart from beginning
+				level = 1;
+			}
+			Sounds.levelWon(() -> BobbyGame.setActiveScreen(
+					new LevelScreen(level, levelScore + startScore, nLives, nBonusLives))
+			);
 		}
 
 
@@ -256,18 +289,15 @@ public class LevelScreen extends BaseScreen {
 				|| (swordsman != null && bobby.overlapsSwordsman(swordsman)) ) {
 
 			System.out.println("Bobby died by collision");
-			BobbyGame.setActiveScreen(new LevelScreen(level, startScore));
+			die();
 		}
 
-		if ( bobby.getY() < bobby.startRect.y && (carpet != null) && !bobby.belowOverlaps(carpet)) {
+		if ( (bobby.getY() < bobby.startRect.y) && ((carpet == null) || (!bobby.belowOverlaps(carpet))) ) {
 			System.out.println("Bobby died by falling");
-			terminating = true;
+			isDying = true;
 			bobby.fallToDeath();
-			Action deathSequence = Actions.sequence(
-					Actions.delay(2),
-					Actions.run(() -> BobbyGame.setActiveScreen(new LevelScreen(level, startScore)))
-			);
-			bobby.addAction(deathSequence);
+
+			Sounds.fallDead(this::die);
 		}
 
 
@@ -279,15 +309,38 @@ public class LevelScreen extends BaseScreen {
 			else if (nCrossedPlatforms == 2 && swordsman.getCurrHole() < 1)
 				swordsman.setCurrHole(1);
 		}
+
+		if (isFinal) {
+			//show swordsman sprite in front of booth for final level
+			if (countCrossedPlatforms() == 3 && bobby.isOnSolid() && finalSwordsman == null) {
+				finalSwordsman = new FinalSwordsman(mainStage);
+			}
+		}
+	}
+
+	private void die() {
+		if (nBonusLives > 0)
+			nBonusLives --;
+		else
+			nLives --;
+
+		if (nLives == 0) {
+			//game over
+			BobbyGame.setActiveScreen(new MenuScreen());
+		} else {
+			//restart level
+			BobbyGame.setActiveScreen(new LevelScreen(level, startScore, nLives, nBonusLives));
+		}
 	}
 
 
 	@Override
 	public boolean keyDown(int keyCode) {
-		if (terminating)
+		if (isDying)
 			return true;
 
 		if (keyCode == Input.Keys.SPACE || keyCode == Input.Keys.UP) {
+			Sounds.jump();
 			bobby.jump();
 		}
 

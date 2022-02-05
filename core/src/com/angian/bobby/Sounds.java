@@ -1,18 +1,63 @@
 package com.angian.bobby;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 
 public class Sounds {
-    private static Sound startWater;
 
+    private static Sound runSound;
+    private static Music jumpEffect;
+    private static Music levelWonEffect;
+    private static Music fallDeadEffect;
 
+    private static boolean isRunLooping = false;
 
     public static void initialize() {
-        startWater = Gdx.audio.newSound(Gdx.files.internal("sounds/start_water.wav"));
+        runSound = Gdx.audio.newSound(Gdx.files.internal("sounds/run.wav"));
+        jumpEffect = Gdx.audio.newMusic(Gdx.files.internal("sounds/jump.wav"));
+        levelWonEffect = Gdx.audio.newMusic(Gdx.files.internal("sounds/level_won.wav"));
+        fallDeadEffect = Gdx.audio.newMusic(Gdx.files.internal("sounds/fall_dead.wav"));
     }
 
-    public static void startWater() {
-        startWater.play();
+
+    public static void run() {
+        if (!isRunLooping) {
+            isRunLooping = true;
+            runSound.loop();
+        }
+    }
+
+    public static void stopRun() {
+        if (isRunLooping) {
+            isRunLooping = false;
+            runSound.pause();
+        }
+    }
+
+    public static void jump() {
+        runSound.pause();
+
+        jumpEffect.setOnCompletionListener(effect -> {
+            if (isRunLooping)
+                runSound.loop();
+        });
+
+        jumpEffect.play();
+    }
+
+    public static void levelWon(Runnable cbk) {
+        runSound.stop();
+        levelWonEffect.setOnCompletionListener(effect -> cbk.run());
+
+        levelWonEffect.play();
+    }
+
+    public static void fallDead(Runnable cbk) {
+        runSound.stop();
+        jumpEffect.stop();
+        fallDeadEffect.setOnCompletionListener(effect -> cbk.run());
+
+        fallDeadEffect.play();
     }
 }

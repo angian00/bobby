@@ -8,10 +8,13 @@ import static com.angian.bobby.LevelConstants.ANIM_FRAME_DURATION;
 
 
 public class Sausage extends BaseActor {
+    private LevelScreen levelScreen;
     public Rectangle startRect;
 
-    public Sausage(LevelScreen.EnemyHeight height, Stage s) {
+    public Sausage(LevelScreen levelScreen, LevelScreen.EnemyHeight height, Stage s) {
         super(s);
+        this.levelScreen = levelScreen;
+
         loadAnimationFromSheet("sausage_spritesheet.png", 2, 1, ANIM_FRAME_DURATION, true);
 
 
@@ -30,6 +33,9 @@ public class Sausage extends BaseActor {
     }
 
     public void act(float dt) {
+        if (levelScreen.isWinning)
+            return;
+
         super.act(dt);
 
         applyPhysics(dt);

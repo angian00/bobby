@@ -8,10 +8,13 @@ import static com.angian.bobby.LevelConstants.ANIM_FRAME_DURATION;
 import static com.angian.bobby.LevelConstants.SCALE_FACTOR;
 
 public class Carpet extends Solid {
+    private LevelScreen levelScreen;
     public Rectangle startRect;
 
-    public Carpet(Stage s) {
+    public Carpet(LevelScreen levelScreen, Stage s) {
         super(0, 0, 0, 0, s);
+        this.levelScreen = levelScreen;
+
         loadAnimationFromSheet("carpet_spritesheet.png", 4, 1, ANIM_FRAME_DURATION, true);
         setBoundaryRectangle();
 
@@ -24,6 +27,9 @@ public class Carpet extends Solid {
     }
 
     public void act(float dt) {
+        if (levelScreen.isWinning)
+            return;
+
         super.act(dt);
 
         applyPhysics(dt);
