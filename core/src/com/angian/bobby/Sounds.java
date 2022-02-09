@@ -12,6 +12,7 @@ public class Sounds {
     private static Music fallDeadEffect;
 
     private static boolean isRunLooping = false;
+    public static boolean isEffectPlaying = false;
 
     public static void initialize() {
         runSound = Gdx.audio.newSound(Gdx.files.internal("sounds/run.wav"));
@@ -37,8 +38,10 @@ public class Sounds {
 
     public static void jump() {
         runSound.pause();
+        isEffectPlaying = true;
 
         jumpEffect.setOnCompletionListener(effect -> {
+            isEffectPlaying = false;
             if (isRunLooping)
                 runSound.loop();
         });
@@ -47,16 +50,24 @@ public class Sounds {
     }
 
     public static void levelWon(Runnable cbk) {
+        isEffectPlaying = true;
         runSound.stop();
-        levelWonEffect.setOnCompletionListener(effect -> cbk.run());
+        levelWonEffect.setOnCompletionListener(effect -> {
+            isEffectPlaying = false;
+            cbk.run();
+        });
 
         levelWonEffect.play();
     }
 
     public static void fallDead(Runnable cbk) {
+        isEffectPlaying = true;
         runSound.stop();
         jumpEffect.stop();
-        fallDeadEffect.setOnCompletionListener(effect -> cbk.run());
+        fallDeadEffect.setOnCompletionListener(effect -> {
+            isEffectPlaying = false;
+            cbk.run();
+        });
 
         fallDeadEffect.play();
     }

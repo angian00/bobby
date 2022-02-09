@@ -43,8 +43,8 @@ public class LevelScreen extends BaseScreen {
 
 
 	public LevelScreen() {
-		this(14, 0, 5, 0);
-		//this(6, 0, 5, 0);  //DEBUG
+		//this(1, 0, 5, 0);
+		this(14, 0, 5, 0);  //DEBUG
 	}
 
 	public LevelScreen(int level, float startScore, int nLives, int nBonusLives) {
@@ -182,11 +182,8 @@ public class LevelScreen extends BaseScreen {
 				break;
 			case 14:
 				levelType = LevelType.CARPET;
-				//DEBUG
-				creampieHeight = null;
-				sausageHeight = null;
-				//creampieHeight = EnemyHeight.LOW;
-				//sausageHeight = EnemyHeight.LOW;
+				creampieHeight = EnemyHeight.LOW;
+				sausageHeight = EnemyHeight.LOW;
 				isFinal = true;
 				break;
 			default:

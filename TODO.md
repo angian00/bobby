@@ -1,6 +1,5 @@
 ## Milestones
 
-### v0.5
 
 ### v0.6
 - fine tuning distances, speeds and pixel art
@@ -12,5 +11,4 @@
 - porting to web
 
 ## Bugfixing
-- tune fall from ledge (rewrite preventOverlap())
-- tune jump and speeds
+

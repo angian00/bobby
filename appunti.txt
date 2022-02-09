@@ -134,4 +134,33 @@ http://www.angelcode.com/products/bmfont/doc/file_format.html
 
 
 
+---------------
+livello 05:
+frame_190: parte sausage   (a -4 px dal margine dx)   time=9948
+frame_436: arriva sausage  (a +4 px dal margine sx)   time=8061
 
+= 5 secondi/screen per sausage
+delay comparsa sausage: 
+
+
+frame_120: parte creampie  (a 0 px dal margine sx)  time=9540
+frame_632: arriva creampie (a 0 px dal margine dx)  time=5664
+
+= 10 secondi/screen per creampie
+delay comparsa creampie: 
+
+salto bobby da fermo:
+start: frame 270
+end:   frame 339
+altezza max: frame 313 		15 px da terra
+
+
+056 schermo completo
+069 comparsa sausage  == 13 frame = 0.25 sec
+120 comparsa creampie == 1.28 sec
+
+= 70 frame di durata = 1.4 sec
+
+
+ascensore arriva a sx:  frame 076
+ascensore arriva a dx:  frame 

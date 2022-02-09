@@ -2,6 +2,10 @@
 # Change Log
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [0.6] - 2022-02-09
+### Fixed
+- Tuned speeds, timings and jump heights to make all levels winnable 
+
 ## [0.5] - 2022-02-05
  
 ### Added
