@@ -13,8 +13,12 @@ public class LevelConstants {
     public static final float ANIM_FRAME_DURATION = 0.1f;
     public static final float TIME_FACTOR = 408;
 
+    public static final float FALL_TO_DEATH_DURATION = 1.25f;
+    public static final float WINNING_LEVEL_DURATION = 2.7f;
+
     public static final Rectangle TEXT_TIME  = new Rectangle(250,  10, 54, 7);
     public static final Rectangle TEXT_SCORE = new Rectangle(250, 178, 54, 7);
+
 
     public static final Rectangle[] LIFE_POSITIONS = {
             new Rectangle(120, 169, 6, 7),
@@ -32,6 +36,11 @@ public class LevelConstants {
 
     public static final Rectangle PROGRESS_START = new Rectangle(128, 16, 2, 1);
     public static final float PROGRESS_STEP = 4;
+
+    public static final Rectangle BUTTON_LEFT_POSITION = new Rectangle(16, 130, 16, 16);
+    public static final Rectangle BUTTON_RIGHT_POSITION = new Rectangle(288, 130, 16, 16);
+    public static final Rectangle BUTTON_JUMP_POSITION = new Rectangle(144, 130, 32, 16);
+
 
     public static final Rectangle BOBBY_START = new Rectangle(0, 74, 16, 22);
     public static final float BOBBY_RUN_SPEED = 30 * SCALE_FACTOR; //in px per sec
@@ -87,6 +96,8 @@ public class LevelConstants {
             new Rectangle(184,96, 56, 20),
             new Rectangle(280,96, 40, 20)
     };
+
+
 
     public static Rectangle standard2gdxCoords(Rectangle layoutRect) {
         float flippedY = SCREEN_HEIGHT - layoutRect.y*SCALE_FACTOR -layoutRect.height*SCALE_FACTOR;

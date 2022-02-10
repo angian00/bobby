@@ -55,12 +55,14 @@ public class Bobby extends BaseActor {
         super.act(dt);
 
         if ( (!isFalling()) && (!isJumping()) ) {
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)  ||
+                    (levelScreen.isTouchEnabled && levelScreen.touchLeft.isPressed()) ) {
                 velocityVec.x = -LevelConstants.BOBBY_RUN_SPEED;
                 setScaleX(-Math.abs(getScaleX())); //flips the sprite horizontally
                 Sounds.run();
 
-            } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            } else if ( Gdx.input.isKeyPressed(Input.Keys.RIGHT) ||
+                    (levelScreen.isTouchEnabled && levelScreen.touchRight.isPressed()) ) {
                 velocityVec.x = LevelConstants.BOBBY_RUN_SPEED;
                 setScaleX(+Math.abs(getScaleX()));
                 Sounds.run();
@@ -110,6 +112,11 @@ public class Bobby extends BaseActor {
     public void jump() {
         if (isJumping() || isFalling())
             return;
+
+        if (levelScreen.isWinning || levelScreen.isDying)
+            return;
+
+        Sounds.jump();
 
         velocityVec.y = LevelConstants.BOBBY_JUMP_SPEED;
     }

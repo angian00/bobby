@@ -2,6 +2,15 @@
 # Change Log
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## [0.7] - 2022-02-10
+### Changed
+- Downgraded to java 1.7 to avoid a problems on web port
+
+### Fixed
+- Porting to html
+- Some issues with sound
+
+
 ## [0.6] - 2022-02-09
 ### Fixed
 - Tuned speeds, timings and jump heights to make all levels winnable 

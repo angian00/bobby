@@ -1,14 +1,27 @@
 package com.angian.bobby;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static com.angian.bobby.LevelConstants.*;
+import static com.badlogic.gdx.Input.Peripheral.MultitouchScreen;
 
 public class LevelScreen extends BaseScreen {
 	private enum LevelType {
@@ -22,16 +35,20 @@ public class LevelScreen extends BaseScreen {
 		LOW
 	}
 
+	private static Logger logger = Logger.getLogger("BobbyGame");
+
 	private int level;
 	private final float startScore;
 	private int nLives;
 	private int nBonusLives;
 	private float levelScore;
-	private boolean isDying;
+	public boolean isDying;
 	public boolean isWinning;
+	public float timeToSwitchLevel;
 	private boolean isFinal;
 
 	private Label timeLabel;
+	public final boolean isTouchEnabled;
 
 	private final List<Solid> platforms;
 	private Bobby bobby;
@@ -41,13 +58,19 @@ public class LevelScreen extends BaseScreen {
 	private Swordsman swordsman;
 	private FinalSwordsman finalSwordsman;
 
+	public Button touchLeft;
+	public Button touchRight;
+	private Button touchJump;
+
 
 	public LevelScreen() {
-		//this(1, 0, 5, 0);
-		this(14, 0, 5, 0);  //DEBUG
+		this(1, 0, 5, 0);
+		//this(2, 0, 5, 0);  //DEBUG
 	}
 
 	public LevelScreen(int level, float startScore, int nLives, int nBonusLives) {
+		logger.severe("LevelScreen constructor [level=" + level + "]");
+
 		this.level = level;
 		this.startScore = startScore;
 		this.nLives = nLives;
@@ -55,9 +78,16 @@ public class LevelScreen extends BaseScreen {
 		this.isDying = false;
 		this.isWinning = false;
 		this.platforms = new ArrayList<>();
+		this.isTouchEnabled = Gdx.input.isPeripheralAvailable(MultitouchScreen);
+
+		Sounds.reset();
 
 		initializeTemplate();
 		initializeLabels();
+
+		if (isTouchEnabled) {
+			initializeTouchControls();
+		}
 	}
 
 	public List<Solid> getPlatforms() {
@@ -76,7 +106,7 @@ public class LevelScreen extends BaseScreen {
 		timeLabel.setHeight(labelRect.height);
 		mainStage.addActor(timeLabel);
 
-		Label scoreLabel = new Label(String.format("%06d", (int)startScore), Styles.labelStyle);
+		Label scoreLabel = new Label(Util.formatLabelNumber((int)startScore), Styles.labelStyle);
 		labelRect = LevelConstants.standard2gdxCoords(LevelConstants.TEXT_SCORE);
 		scoreLabel.setPosition(labelRect.x, labelRect.y);
 		scoreLabel.setWidth(labelRect.width);
@@ -99,6 +129,35 @@ public class LevelScreen extends BaseScreen {
 		new ProgressCursor(level, mainStage);
 	}
 
+	private void initializeTouchControls() {
+		Drawable drawable = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("arrow_left.png"))));
+		touchLeft = new ImageButton(drawable);
+		Rectangle rect = LevelConstants.standard2gdxCoords(BUTTON_LEFT_POSITION);
+		touchLeft.setPosition(rect.x, rect.y);
+		mainStage.addActor(touchLeft);
+
+		drawable = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("arrow_right.png"))));
+		touchRight = new ImageButton(drawable);
+		rect = LevelConstants.standard2gdxCoords(BUTTON_RIGHT_POSITION);
+		touchRight.setPosition(rect.x, rect.y);
+		mainStage.addActor(touchRight);
+
+
+		drawable = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("arrow_up.png"))));
+		touchJump = new ImageButton(drawable);
+		rect = LevelConstants.standard2gdxCoords(BUTTON_JUMP_POSITION);
+		touchJump.setPosition(rect.x, rect.y);
+
+		touchJump.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+				if ((!isDying) && (!isWinning))
+					bobby.jump();
+			}
+		});
+
+		mainStage.addActor(touchJump);
+	}
 
 	private void initializeTemplate() {
 		LevelType levelType;
@@ -239,21 +298,28 @@ public class LevelScreen extends BaseScreen {
 
 	@Override
 	protected void update(float dt) {
-		if (isDying || isWinning)
+		if (isDying || isWinning) {
+			timeToSwitchLevel -= dt;
+			if (timeToSwitchLevel <= 0) {
+				//level switch music has finished playing? ok, switch level
+				BobbyGame.setActiveScreen(new LevelScreen(level, startScore, nLives, nBonusLives));
+			}
+
 			return;
+		}
 
 		if (levelScore <= 0) {
 			levelScore = 0;
-			System.out.println("Bobby died by timeout");
+			logger.severe("Bobby died by timeout");
 			die();
 		}
 
 		levelScore -= (dt * TIME_FACTOR);
-		timeLabel.setText(String.format("%06d", (int)levelScore));
+		timeLabel.setText(Util.formatLabelNumber((int)levelScore));
 
 		float endX = isFinal ? END_GAME_X : END_LEVEL_X;
 		if (bobby.getX() >= endX  * SCALE_FACTOR + bobby.getWidth() / 2) {
-			System.out.println("Level " + level + " won");
+			logger.severe("Level " + level + " won");
 			if (nBonusLives < 3)
 				nBonusLives ++;
 
@@ -263,9 +329,19 @@ public class LevelScreen extends BaseScreen {
 				// restart from beginning
 				level = 1;
 			}
-			Sounds.levelWon(() -> BobbyGame.setActiveScreen(
-					new LevelScreen(level, levelScore + startScore, nLives, nBonusLives))
-			);
+
+			/*
+			Sounds.levelWon(new Runnable() {
+				@Override
+				public void run() {
+					BobbyGame.setActiveScreen(new LevelScreen(level, levelScore + startScore, nLives, nBonusLives));
+				}
+			});
+			*/
+
+			//---- dirty hacks to avoid Music.OnCompletionListener not triggering in html port ---
+			timeToSwitchLevel = WINNING_LEVEL_DURATION;
+			Sounds.levelWon(null);
 		}
 
 
@@ -285,16 +361,17 @@ public class LevelScreen extends BaseScreen {
 				|| (creampie != null && bobby.overlaps(creampie))
 				|| (swordsman != null && bobby.overlapsSwordsman(swordsman)) ) {
 
-			System.out.println("Bobby died by collision");
+			logger.severe("Bobby died by collision");
 			die();
 		}
 
 		if ( (bobby.getY() < bobby.startRect.y) && ((carpet == null) || (!bobby.belowOverlaps(carpet))) ) {
-			System.out.println("Bobby died by falling");
+			logger.severe("Bobby died by falling");
 			isDying = true;
 			bobby.fallToDeath();
 
-			Sounds.fallDead(this::die);
+			Sounds.fallDead(null);
+			timeToSwitchLevel = FALL_TO_DEATH_DURATION;
 		}
 
 
@@ -316,6 +393,8 @@ public class LevelScreen extends BaseScreen {
 	}
 
 	private void die() {
+		logger.severe("die");
+
 		if (nBonusLives > 0)
 			nBonusLives --;
 		else
@@ -333,11 +412,10 @@ public class LevelScreen extends BaseScreen {
 
 	@Override
 	public boolean keyDown(int keyCode) {
-		if (isDying)
+		if (isDying || isWinning)
 			return true;
 
 		if (keyCode == Input.Keys.SPACE || keyCode == Input.Keys.UP) {
-			Sounds.jump();
 			bobby.jump();
 		}
 

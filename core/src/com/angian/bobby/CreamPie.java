@@ -37,7 +37,13 @@ public class CreamPie extends BaseActor {
 
         Action startingAction = Actions.sequence(
                 Actions.delay(LevelConstants.CREAMPIE_START_DELAY),
-                Actions.run(() -> { setVisible(true); isMoving = true; })
+                Actions.run(new Runnable() {
+                    @Override
+                    public void run() {
+                        setVisible(true);
+                        isMoving = true;
+                    }
+                })
         );
 
         this.addAction(startingAction);
